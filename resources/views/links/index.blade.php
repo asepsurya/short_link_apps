@@ -56,21 +56,29 @@
             </div>
 
             <div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-3 bg-white dark:bg-[#1A1A22] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 shadow-sm">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="use_redirect_page" value="1" class=" h-5 w-5 rounded border-gray-200 text-purple-600 focus:ring-purple-500 peer" checked>
-
-                        <span class="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300 ms-4">10‑second Redirect Page</span>
+                @if(Auth::user()->role === 'admin')
+                <div class="flex items-center justify-between bg-white dark:bg-[#1A1A22] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 shadow-sm">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white">10‑second Redirect Page</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Show a countdown before redirecting.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer ml-4 shrink-0">
+                        <input type="hidden" name="use_redirect_page" value="0">
+                        <input type="checkbox" name="use_redirect_page" value="1" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                     </label>
                 </div>
+                @endif
 
                 <div class="flex items-center gap-4">
+                    @if(Auth::user()->role === 'admin')
                     <button type="button" @click="showAdvanced = !showAdvanced" class="text-sm text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 font-medium">
                         <svg class="w-4 h-4" :class="{'rotate-180': showAdvanced}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                         <span x-text="showAdvanced ? 'Hide Advanced Options' : 'Show Advanced Options'"></span>
                     </button>
+                    @endif
                     <button type="submit" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
@@ -80,6 +88,7 @@
                 </div>
             </div>
 
+            @if(Auth::user()->role === 'admin')
             <div x-show="showAdvanced" x-collapse style="display: none;" class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     <div>
@@ -111,6 +120,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
         </form>
     </div>
@@ -138,6 +148,7 @@
             <table class="min-w-full">
                 <thead>
                     <tr class="bg-gray-50 dark:bg-[#0D0D11] text-left">
+                        <th class="px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">#</th>
                         <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Short Link</th>
                         <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Destination</th>
                         <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Clicks</th>
@@ -149,6 +160,9 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @foreach($links as $link)
                     <tr class="hover:bg-gray-50 dark:hover:bg-[#1A1A22] transition-colors group">
+                        <td class="px-4 py-4 whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ ($links->currentPage() - 1) * $links->perPage() + $loop->iteration }}
+                        </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
@@ -260,6 +274,11 @@
                 alert('Copied to clipboard!');
             });
         }
-
+        document.querySelector("form").addEventListener("submit", function() {
+            const checkbox = document.querySelector("input[name='use_redirect_page']");
+            if (!checkbox.checked) {
+                checkbox.value = 0;
+            }
+        });
     </script>
 </x-app-layout>

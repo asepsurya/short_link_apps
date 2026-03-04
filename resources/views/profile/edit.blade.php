@@ -1,28 +1,36 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-1">
+            {{ __('Profile Settings') }}
         </h2>
     </x-slot>
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Manage Account</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Update your profile information and security settings.</p>
+    </div>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+    <div class="space-y-6">
+        <div class="p-6 bg-white dark:bg-[#121217] shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+            <div class="max-w-xl">
+                @include('profile.partials.update-profile-information-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
+        <div class="p-6 bg-white dark:bg-[#121217] shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+            <div class="max-w-xl">
+                @include('profile.partials.update-password-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
+        <div class="p-6 bg-white dark:bg-[#121217] shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+            <div class="max-w-xl">
+                @include('profile.partials.api-token-form')
+            </div>
+        </div>
+
+        <div class="p-6 bg-white dark:bg-[#121217] shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+            <div class="max-w-xl">
+                @include('profile.partials.delete-user-form')
             </div>
         </div>
     </div>

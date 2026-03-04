@@ -6,6 +6,8 @@ use App\Models\Link;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class LinkController extends Controller
 {
@@ -91,6 +93,12 @@ class LinkController extends Controller
 
         $link->update($data);
 
+        // Clear cache
+        Cache::forget('link_' . $link->short_code);
+        if ($link->custom_slug) {
+            Cache::forget('link_' . $link->custom_slug);
+        }
+
         return redirect()->route('links.index')->with('success', 'Link updated successfully.');
     }
 
@@ -98,6 +106,10 @@ class LinkController extends Controller
     {
         if ($link->user_id !== auth()->id())
             abort(403);
+        Cache::forget('link_' . $link->short_code);
+        if ($link->custom_slug) {
+            Cache::forget('link_' . $link->custom_slug);
+        }
         $link->delete();
         return redirect()->route('links.index')->with('success', 'Link deleted successfully.');
     }
@@ -110,7 +122,21 @@ class LinkController extends Controller
     {
         $validated = $request->validate([
             'original_url' => 'required|url|max:2000',
+            'h-captcha-response' => 'required',
+        ], [
+            'h-captcha-response.required' => __('Please complete the captcha verification.'),
         ]);
+
+        // Verify hCaptcha
+        $response = Http::withoutVerifying()->asForm()->post('https://hcaptcha.com/siteverify', [
+            'secret' => env('HCAPTCHA_SECRET'),
+            'response' => $request->input('h-captcha-response'),
+            'remoteip' => $request->ip(),
+        ]);
+
+        if (!$response->json('success')) {
+            return back()->withErrors(['h-captcha-response' => 'Please complete the captcha verification.']);
+        }
 
         $shortCode = Str::random(6);
         while (Link::where('short_code', $shortCode)->exists()) {
@@ -120,6 +146,7 @@ class LinkController extends Controller
         $link = Link::create([
             'uuid' => Str::uuid(),
             'user_id' => null,
+            'creator_ip' => $request->ip(),
             'original_url' => $validated['original_url'],
             'short_code' => $shortCode,
             'redirect_type' => 302,

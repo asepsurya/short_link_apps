@@ -10,9 +10,12 @@ Route::get('/user', function (Request $request) {
 
 /**
  * Authenticated API Routes — require a Sanctum Bearer token
- * Rate-limited to 60 requests/minute
  */
-Route::middleware(['auth:sanctum', 'throttle:60,1'])->prefix('v1')->name('api.v1.')->group(function () {
+Route::middleware([
+    'auth:sanctum', 
+    'throttle:' . Cache::get('platform.api_rate_limit', 60) . ',1',
+    \App\Http\Middleware\ApiRequestTracker::class
+])->prefix('v1')->name('api.v1.')->group(function () {
     // Create a short link
     Route::post('/links', [ApiLinkController::class , 'store'])->name('links.store');
     // List all user's links (with pagination)

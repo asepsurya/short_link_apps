@@ -39,12 +39,14 @@ class ApiLinkController extends Controller
         $code = $validated['custom_slug'] ?? Str::random(6);
 
         $link = Link::create([
+            'uuid' => (string) Str::uuid(),
             'user_id' => $request->user()->id,
             'original_url' => $validated['original_url'],
-            'code' => $code,
-            'password' => $validated['password'],
-            'expires_at' => $validated['expires_at'],
-            'use_redirect_page' => $validated['use_redirect_page'] ?? true,
+            'short_code' => $code, // Use short_code instead of code
+            'code' => $code,       // Backward compatibility
+            'password' => !empty($validated['password']) ? bcrypt($validated['password']) : null,
+            'expires_at' => $validated['expires_at'] ? \Carbon\Carbon::parse($validated['expires_at']) : null,
+            'use_redirect_page' => $request->boolean('use_redirect_page', true),
         ]);
 
         return response()->json([
@@ -94,7 +96,20 @@ class ApiLinkController extends Controller
 
         if (isset($validated['custom_slug'])) {
             $validated['code'] = $validated['custom_slug'];
+            $validated['short_code'] = $validated['custom_slug']; // Sync
             unset($validated['custom_slug']);
+        }
+
+        if (isset($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        }
+
+        if (isset($validated['expires_at'])) {
+            $validated['expires_at'] = \Carbon\Carbon::parse($validated['expires_at']);
+        }
+
+        if ($request->has('use_redirect_page')) {
+            $validated['use_redirect_page'] = $request->boolean('use_redirect_page');
         }
 
         $link->update($validated);

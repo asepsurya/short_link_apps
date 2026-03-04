@@ -2,24 +2,52 @@
 
     <!-- Profile & Logo Area -->
     <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+        @php
+            $appName = Cache::get('platform.app_name', config('app.name', 'ScrollWebLink'));
+            $primaryColor = Cache::get('platform.primary_color', '#7c3aed');
+            $hasLink = \Illuminate\Support\Str::contains($appName, 'Link');
+            $beforeLink = $hasLink ? \Illuminate\Support\Str::beforeLast($appName, 'Link') : $appName;
+        @endphp
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white mb-8">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                </svg>
-            </div>
-            ScrollWeb<span class="text-purple-600">Link</span>
+            @if(Cache::has('platform.logo_path'))
+                <img src="{{ asset('storage/' . Cache::get('platform.logo_path')) }}" class="w-8 h-8 object-contain">
+            @else
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white" style="background: linear-gradient(135deg, {{ $primaryColor }}, #4f46e5)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                    </svg>
+                </div>
+            @endif
+            {{ $beforeLink }}<span style="color: {{ $primaryColor }}">{{ $hasLink ? 'Link' : '' }}</span>
         </a>
 
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center border-2 border-white dark:border-gray-800 text-purple-600 dark:text-purple-400 font-bold shadow-sm">
-                {{ substr(Auth::user()->name, 0, 1) }}
-            </div>
-            <div class="truncate">
-                <p class="text-[14px] font-semibold text-gray-900 dark:text-white truncate" title="{{ Auth::user()->name }}">Hi, {{ explode(' ', Auth::user()->name)[0] }}</p>
-                <p class="text-[12px] text-gray-500 dark:text-gray-400 truncate" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</p>
-            </div>
+
+<div class="flex items-center gap-3">
+    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center border-2 border-white dark:border-gray-800 text-purple-600 dark:text-purple-400 font-bold shadow-sm overflow-hidden">
+        @if(Auth::user()->avatar)
+            <img src="{{ asset(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+        @else
+            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+        @endif
+    </div>
+    <div class="truncate">
+        <p class="text-[14px] font-semibold text-gray-900 dark:text-white truncate" title="{{ Auth::user()->name }}">
+            Hi, {{ explode(' ', Auth::user()->name)[0] }}
+        </p>
+        <div class="flex items-center gap-1.5">
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 truncate max-w-[100px]" title="{{ Auth::user()->email }}">
+                {{ Auth::user()->email }}
+            </p>
+            
         </div>
+        @if(Auth::user()->role === 'admin')
+            <span class="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 rounded dark:bg-purple-900/40 dark:text-purple-400">
+                Admin
+            </span>
+        @endif
+    </div>
+</div>
+
     </div>
 
     <!-- Navigation Links -->
@@ -55,6 +83,14 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>
             Users
+        </a>
+
+        <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full justify-start {{ request()->routeIs('admin.settings') ? 'bg-purple-50 text-purple-700 dark:bg-purple-600/10 dark:text-purple-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-100' }}">
+            <svg class="w-5 h-5 {{ request()->routeIs('admin.settings') ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            App Settings
         </a>
         @endif
     </nav>

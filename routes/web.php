@@ -13,6 +13,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Language switch
+Route::get('/lang/{lang}', [\App\Http\Controllers\LanguageController::class, 'switch'])->name('lang.switch');
+
+// Public Documentation
+Route::get('/docs', function () {
+    return view('docs');
+})->name('docs');
+
 // Guest link generation (no auth required)
 Route::post('/guest-link', [LinkController::class, 'guestStore'])->name('guest.link.store');
 
@@ -25,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/token', [ProfileController::class, 'generateToken'])->name('profile.token.generate');
+    Route::delete('/profile/token', [ProfileController::class, 'revokeTokens'])->name('profile.token.revoke');
 });
 
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
@@ -32,7 +42,11 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.destroy');
     Route::patch('/settings/redirect', [AdminController::class, 'updateRedirectSetting'])->name('settings.redirect');
+    Route::patch('/settings/api', [AdminController::class, 'updateApiSettings'])->name('settings.api');
     Route::patch('/links/batch-redirect', [AdminController::class, 'batchUpdateRedirect'])->name('links.batch-redirect');
+    Route::get('/settings', [AdminController::class, 'appSettings'])->name('settings');
+    Route::patch('/settings/app', [AdminController::class, 'updateAppSettings'])->name('settings.update-app');
+    Route::patch('/settings/api', [AdminController::class, 'updateApiSettings'])->name('settings.update-api');
 });
 
 // Short Link resolution (Must be at the bottom to avoid overriding other routes)

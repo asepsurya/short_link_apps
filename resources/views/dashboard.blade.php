@@ -33,11 +33,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                     </svg>
                 </div>
-                <span class="text-xs font-medium text-green-500 bg-green-500/10 px-2 py-1 rounded flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span class="text-xs font-medium {{ $linksGrowth >= 0 ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10' }} px-2 py-1 rounded flex items-center gap-1">
+                    <svg class="w-3 h-3 {{ $linksGrowth < 0 ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
                     </svg>
-                    12%
+                    {{ number_format(abs($linksGrowth), 1) }}%
                 </span>
             </div>
             <div>
@@ -56,11 +56,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
                 </div>
-                <span class="text-xs font-medium text-green-500 bg-green-500/10 px-2 py-1 rounded flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span class="text-xs font-medium {{ $clicksGrowth >= 0 ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10' }} px-2 py-1 rounded flex items-center gap-1">
+                    <svg class="w-3 h-3 {{ $clicksGrowth < 0 ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
                     </svg>
-                    32%
+                    {{ number_format(abs($clicksGrowth), 1) }}%
                 </span>
             </div>
             <div>
@@ -81,28 +81,10 @@
             </div>
             <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">Avg. CTR</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">24.5%</h3>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($avgCtr * 100, 1) }}%</h3>
             </div>
         </div>
 
-        <!-- API Usage -->
-        <div class="bg-white dark:bg-[#121217] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group">
-            <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-colors"></div>
-            <div class="flex justify-between items-start mb-4">
-                <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center text-orange-600 dark:text-orange-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                    </svg>
-                </div>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">API Requests</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">1,240</h3>
-                <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 mt-2">
-                    <div class="bg-orange-500 h-1.5 rounded-full" style="width: 12%"></div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Main Content Area Grid -->
@@ -166,21 +148,9 @@
         </div>
     </div>
 
-    <!-- Script to render the chart using Chart.js -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('clicksChart').getContext('2d');
-
-            // Generate some mock labels
-            const labels = [];
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                labels.push(d.toLocaleDateString('en-US', {
-                    month: 'short'
-                    , day: 'numeric'
-                }));
-            }
 
             // Get dark mode status for chart colors
             const isDark = document.documentElement.classList.contains('dark');
@@ -193,83 +163,78 @@
             gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
 
             new Chart(ctx, {
-                type: 'line'
-                , data: {
-                    labels: {
-                        !!json_encode($chartDates) !!
-                    }
-                    , datasets: [{
-                        label: 'Clicks'
-                        , data: {
-                            !!json_encode($chartClicks) !!
-                        }
-                        , borderColor: '#7C3AED'
-                        , backgroundColor: gradient
-                        , borderWidth: 2
-                        , pointBackgroundColor: '#ffffff'
-                        , pointBorderColor: '#7C3AED'
-                        , 
-                        , pointBorderWidth: 2
-                        , pointRadius: 4
-                        , pointHoverRadius: 6
-                        , fill: true
-                        , tension: 0.4
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($chartDates) !!},
+                    datasets: [{
+                        label: 'Clicks',
+                        data: {!! json_encode($chartClicks) !!},
+                        borderColor: '#7C3AED',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#7C3AED',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4
                     }]
-                }
-                , options: {
-                    responsive: true
-                    , maintainAspectRatio: false
-                    , plugins: {
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
                         legend: {
                             display: false
-                        }
-                        , tooltip: {
-                            backgroundColor: isDark ? '#1f2937' : '#ffffff'
-                            , titleColor: isDark ? '#f3f4f6' : '#111827'
-                            , bodyColor: isDark ? '#d1d5db' : '#4b5563'
-                            , borderColor: isDark ? '#374151' : '#e5e7eb'
-                            , borderWidth: 1
-                            , padding: 10
-                            , displayColors: false
-                            , callbacks: {
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                            titleColor: isDark ? '#f3f4f6' : '#111827',
+                            bodyColor: isDark ? '#d1d5db' : '#4b5563',
+                            borderColor: isDark ? '#374151' : '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
                                 label: function(context) {
                                     return context.parsed.y + ' clicks';
                                 }
                             }
                         }
-                    }
-                    , scales: {
+                    },
+                    scales: {
                         y: {
-                            beginAtZero: true
-                            , grid: {
-                                color: gridColor
-                                , borderDash: [5, 5]
-                            }
-                            , ticks: {
-                                color: tickColor
-                                , maxTicksLimit: 5
-                            }
-                            , border: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor,
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                color: tickColor,
+                                maxTicksLimit: 5
+                            },
+                            border: {
                                 display: false
                             }
-                        }
-                        , x: {
+                        },
+                        x: {
                             grid: {
                                 display: false
-                            }
-                            , ticks: {
+                            },
+                            ticks: {
                                 color: tickColor
-                            }
-                            , border: {
+                            },
+                            border: {
                                 display: false
                             }
                         }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
                     }
-                    , interaction: {
-                        intersect: false
-                        , mode: 'index'
-                    , }
-                , }
+                }
             });
         });
 

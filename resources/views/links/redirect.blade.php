@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting... – ScrollWebLink</title>
-    <!-- Meta-Refresh fallback: redirect after 12s just in case JS fails -->
-    <meta http-equiv="refresh" content="12;url={{ $redirectUrl }}">
+    @php
+        $duration = (int) Cache::get('platform.redirect_duration', 10);
+        $fallbackDuration = $duration + 2;
+    @endphp
+    <title>Redirecting... – {{ Cache::get('platform.app_name', 'ScrollWebLink') }}</title>
+    <!-- Meta-Refresh fallback: redirect after dynamic duration + 2s just in case JS fails -->
+    <meta http-equiv="refresh" content="{{ $fallbackDuration }};url={{ $redirectUrl }}">
+
+    <!-- Custom Integrations -->
+    {!! Cache::get('platform.analytics_script') !!}
+    {!! Cache::get('platform.adsense_script') !!}
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
@@ -135,10 +143,39 @@
             color: #6b7280;
         }
 
+        .ad-space {
+            margin: 2rem auto;
+            max-width: 728px;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+            .ad-space {
+                max-width: 320px;
+                min-height: 100px;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Top Ad Space -->
+        <div class="ad-space">
+            Advertisement
+        </div>
+
         <a href="/" class="logo">
             <div class="logo-icon">
                 <svg width="18" height="18" fill="none" stroke="white" viewBox="0 0 24 24">
@@ -159,7 +196,7 @@
                 <circle class="countdown-track" cx="60" cy="60" r="50" />
                 <circle class="countdown-progress" id="progress" cx="60" cy="60" r="50" />
             </svg>
-            <div class="countdown-number" id="counter">10</div>
+            <div class="countdown-number" id="counter">{{ $duration }}</div>
         </div>
 
         <h2>You're being redirected</h2>
@@ -171,11 +208,16 @@
             </svg>
             Continue now
         </a>
-        <p class="skip-note">Redirecting automatically in <span id="seconds">10</span> seconds...</p>
+        <p class="skip-note">Redirecting automatically in <span id="seconds">{{ $duration }}</span> seconds...</p>
+
+        <!-- Bottom Ad Space -->
+        <div class="ad-space">
+            Advertisement
+        </div>
     </div>
 
     <script>
-        const TOTAL = 10;
+        const TOTAL = {{ $duration }};
         const circumference = 2 * Math.PI * 50; // 314.16
         const progress = document.getElementById('progress');
         const counter = document.getElementById('counter');

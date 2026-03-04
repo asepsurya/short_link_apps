@@ -18,7 +18,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white dark:bg-[#121217] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-colors"></div>
             <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4">
@@ -51,36 +51,117 @@
             <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">Total Clicks</p>
             <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalClicks) }}</h3>
         </div>
+
+        <!-- API Requests (Admin Only) -->
+        <div class="bg-white dark:bg-[#121217] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-colors"></div>
+            <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                </svg>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">API Requests</p>
+            <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalApiRequests) }}</h3>
+            <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 mt-2">
+                @php
+                    $rateLimit = (int) Cache::get('platform.api_rate_limit', 60);
+                    $percentage = min(100, ($totalApiRequests / max(1, $rateLimit * 1440)) * 100); // 1440 mins in day
+                @endphp
+                <div class="bg-orange-500 h-1.5 rounded-full" style="width: {{ $percentage }}%"></div>
+            </div>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <!-- Recent Users Table -->
-        <div class="xl:col-span-2 bg-white dark:bg-[#121217] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white">Recent Users</h3>
-                <a href="{{ route('admin.users') }}" class="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline">View all →</a>
+        <div class="xl:col-span-2 space-y-6">
+            <!-- Recent Users Table -->
+            <div class="bg-white dark:bg-[#121217] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Recent Users</h3>
+                    <a href="{{ route('admin.users') }}" class="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline">View all →</a>
+                </div>
+                <ul class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @foreach($recentUsers as $user)
+                    <li class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-[#1A1A22] transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm shrink-0">
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                    {{ $user->name }}
+                                    @if($user->role === 'admin')
+                                    <span class="text-[10px] font-bold uppercase tracking-wider bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 px-1.5 py-0.5 rounded">Admin</span>
+                                    @endif
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{{ $user->created_at->diffForHumans() }}</span>
+                    </li>
+                    @endforeach
+                </ul>
             </div>
-            <ul class="divide-y divide-gray-100 dark:divide-gray-800">
-                @foreach($recentUsers as $user)
-                <li class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-[#1A1A22] transition-colors">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm shrink-0">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                {{ $user->name }}
-                                @if($user->role === 'admin')
-                                <span class="text-[10px] font-bold uppercase tracking-wider bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 px-1.5 py-0.5 rounded">Admin</span>
-                                @endif
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</p>
-                        </div>
+
+            <!-- Guest Link History Table -->
+            <div class="bg-white dark:bg-[#121217] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Guest Link History</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Recent links created by public/unauthenticated users.</p>
                     </div>
-                    <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{{ $user->created_at->diffForHumans() }}</span>
-                </li>
-                @endforeach
-            </ul>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse border-b border-gray-100 dark:border-gray-800">
+                        <thead>
+                            <tr class="bg-gray-50/50 dark:bg-[#0D0D11]/50">
+                                <th class="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">#</th>
+                                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">Short URL</th>
+                                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">Original URL</th>
+                                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">Creator IP</th>
+                                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">Clicks</th>
+                                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 text-right">Created</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                            @forelse($guestLinks as $link)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-[#1A1A22] transition-colors group">
+                                <td class="px-4 py-4 whitespace-nowrap text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                                    {{ ($guestLinks->currentPage() - 1) * $guestLinks->perPage() + $loop->iteration }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="{{ url($link->short_code) }}" target="_blank" class="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline">
+                                        /{{ $link->short_code }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900 dark:text-white truncate max-w-[120px]" title="{{ $link->original_url }}">
+                                        {{ $link->original_url }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded text-[10px] font-mono border border-gray-200 dark:border-gray-700">
+                                        {{ $link->creator_ip ?? 'Unknown' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($link->clicks_count) }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-[10px] text-gray-500 dark:text-gray-500 whitespace-nowrap">{{ $link->created_at->diffForHumans() }}</span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center">
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs">No guest links found.</p>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Platform Settings -->
@@ -110,6 +191,7 @@
                             @csrf
                             @method('PATCH')
                             <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="use_redirect_page" value="0">
                                 <input type="checkbox" name="use_redirect_page" value="1" class="sr-only peer" {{ config('app.default_redirect_page', true) ? 'checked' : '' }} onchange="this.form.submit()">
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                             </label>
@@ -134,6 +216,44 @@
                         </button>
                     </form>
                 </div>
+            </div>
+
+            <!-- API Settings Card -->
+            <div class="bg-white dark:bg-[#121217] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
+                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    API Configuration
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-5">Manage developer access and rate limits.</p>
+
+                <form method="POST" action="{{ route('admin.settings.update-api') }}" class="space-y-4">
+                    @csrf
+                    @method('PATCH')
+
+                    <div class="p-4 bg-gray-50 dark:bg-[#0D0D11] rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-sm font-semibold text-gray-900 dark:text-white">Public API Access</label>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="api_enabled" value="0">
+                                <input type="checkbox" name="api_enabled" value="1" class="sr-only peer" {{ Cache::get('platform.api_enabled', true) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Requests Per Minute (RPM)</label>
+                            <input type="number" name="api_rate_limit" value="{{ Cache::get('platform.api_rate_limit', 60) }}" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-blue-500 focus:ring-blue-500 rounded-xl py-2 px-3 text-sm transition-colors" placeholder="e.g. 60">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm">
+                        Save API Settings
+                    </button>
+                </form>
             </div>
         </div>
     </div>

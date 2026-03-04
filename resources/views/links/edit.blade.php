@@ -99,6 +99,7 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Show a countdown interstitial before redirecting visitors.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer ml-4 shrink-0">
+                            <input type="hidden" name="use_redirect_page" value="0">
                             <input type="checkbox" name="use_redirect_page" value="1" class="sr-only peer" {{ $link->use_redirect_page ? 'checked' : '' }}>
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                         </label>
@@ -163,4 +164,12 @@
             </div>
         </div>
     </div>
+    <script>
+        document.querySelector("form").addEventListener("submit", function() {
+            const checkbox = document.querySelector("input[name='use_redirect_page']");
+            if (checkbox && !checkbox.checked) {
+                checkbox.value = 0;
+            }
+        });
+    </script>
 </x-app-layout>

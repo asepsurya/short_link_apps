@@ -9,6 +9,7 @@ class Link extends Model
     protected $fillable = [
         'uuid',
         'user_id',
+        'creator_ip',
         'original_url',
         'short_code',
         'custom_slug',
