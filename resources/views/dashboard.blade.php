@@ -14,12 +14,16 @@
             <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Here's what's happening with your links today.</p>
         </div>
 
-        <x-primary-button tag="a" href="{{ route('links.index') }}" class="gap-2 shrink-0 bg-purple-600 hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-800">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Create New Link
-        </x-primary-button>
+
+
+    <a href="/links" class="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-purple-500/20 shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Create New Link
+    </a>
+
+
     </div>
 
     <!-- Stats Grid -->

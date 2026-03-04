@@ -1,4 +1,4 @@
-<aside id="sidebar" class="w-64 bg-white dark:bg-[#121217] border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-300 transform -translate-x-full lg:translate-x-0 fixed lg:relative z-30 h-full">
+<aside id="sidebar" class=" w-64 bg-white dark:bg-[#121217] border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-300 transform -translate-x-full lg:translate-x-0 fixed lg:relative z-30 h-full">
 
     <!-- Profile & Logo Area -->
     <div class="p-6 border-b border-gray-200 dark:border-gray-800">
@@ -24,8 +24,8 @@
 
 <div class="flex items-center gap-3">
     <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center border-2 border-white dark:border-gray-800 text-purple-600 dark:text-purple-400 font-bold shadow-sm overflow-hidden">
-        @if(Auth::user()->avatar)
-            <img src="{{ asset(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+        @if(Auth::user()->avatar_url)
+            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
         @else
             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
         @endif
@@ -51,7 +51,7 @@
     </div>
 
     <!-- Navigation Links -->
-    <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+    <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto  sidebar-scroll">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full justify-start {{ request()->routeIs('dashboard') ? 'bg-purple-50 text-purple-700 dark:bg-purple-600/10 dark:text-purple-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-100' }}">
             <svg class="w-5 h-5 {{ request()->routeIs('dashboard') ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>

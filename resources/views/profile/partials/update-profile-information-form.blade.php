@@ -21,8 +21,8 @@
         <div class="flex items-center gap-6 mb-8 p-4 bg-gray-50 dark:bg-[#1A1A22] rounded-2xl border border-gray-100 dark:border-gray-800">
             <div class="relative group">
                 <div class="w-20 h-20 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-2xl border-4 border-white dark:border-gray-800 shadow-md overflow-hidden">
-                    @if($user->avatar)
-                        <img src="{{ asset($user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                    @if($user->avatar_url)
+                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                     @else
                         {{ substr($user->name, 0, 1) }}
                     @endif
