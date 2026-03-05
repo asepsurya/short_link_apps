@@ -128,7 +128,7 @@
                                 <div class="mb-6">
                                     <label for="primary_color" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Brand Accent Color</label>
                                     <div class="flex items-center gap-3">
-                                        <input type="color" name="primary_color" id="primary_color" value="{{ Cache::get('platform.primary_color', '#7c3aed') }}" class="w-12 h-12 rounded-xl border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-[#1A1A22] cursor-pointer">
+                                        <input type="color" name="primary_color" id="primary_color" value="{{ \App\Models\Setting::get('platform.primary_color', '#7c3aed') }}" class="w-12 h-12 rounded-xl border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-[#1A1A22] cursor-pointer">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Main theme highlight color.</span>
                                     </div>
                                 </div>
@@ -140,8 +140,8 @@
                                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Application Logo</label>
                                     <div class="flex items-center gap-6 p-4 bg-gray-50 dark:bg-[#1A1A22] rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
                                         <div class="w-16 h-16 rounded-xl bg-white dark:bg-[#121217] border border-gray-100 dark:border-gray-800 flex items-center justify-center overflow-hidden">
-                                            @if(Cache::has('platform.logo_path'))
-                                            <img src="{{ asset('storage/' . Cache::get('platform.logo_path')) }}" class="w-full h-full object-contain p-1">
+                                            @if(\App\Models\Setting::has('platform.logo_path'))
+                                            <img src="{{ asset('storage/' . \App\Models\Setting::get('platform.logo_path')) }}" class="w-full h-full object-contain p-1">
                                             @else
                                             <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -154,7 +154,7 @@
                                                 Choose Logo
                                             </label>
                                             <input type="hidden" name="reset_logo" id="reset_logo_flag" value="0">
-                                            @if(Cache::has('platform.logo_path'))
+                                            @if(\App\Models\Setting::has('platform.logo_path'))
                                             <button type="button" onclick="document.getElementById('reset_logo_flag').value = 1; this.closest('form').submit();" class="block mt-2 text-[10px] text-red-500 hover:text-red-600 font-bold uppercase tracking-wider transition-colors">
                                                 Reset to Default
                                             </button>
@@ -167,7 +167,7 @@
                                 <!-- Footer Text -->
                                 <div class="mb-6">
                                     <label for="footer_text" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Footer Copyright Text</label>
-                                    <input type="text" name="footer_text" id="footer_text" value="{{ Cache::get('platform.footer_text', '© ' . date('Y') . ' ShortWebLink. All rights reserved.') }}" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm transition-colors shadow-sm">
+                                    <input type="text" name="footer_text" id="footer_text" value="{{ \App\Models\Setting::get('platform.footer_text', '© ' . date('Y') . ' ShortWebLink. All rights reserved.') }}" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm transition-colors shadow-sm">
                                 </div>
 
                                 <!-- Public Link Creation Toggle -->
@@ -178,7 +178,7 @@
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="hidden" name="enable_guest_links" value="0">
-                                        <input type="checkbox" name="enable_guest_links" value="1" class="sr-only peer" {{ Cache::get('platform.enable_guest_links', true) ? 'checked' : '' }}>
+                                        <input type="checkbox" name="enable_guest_links" value="1" class="sr-only peer" {{ \App\Models\Setting::get('platform.enable_guest_links', true) ? 'checked' : '' }}>
                                         <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                                     </label>
                                 </div>
@@ -355,15 +355,15 @@
                             <div class="grid grid-cols-1 gap-8">
                                 <div>
                                     <label for="meta_title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Default Meta Title</label>
-                                    <input type="text" name="meta_title" id="meta_title" value="{{ Cache::get('platform.meta_title', 'ScrollWebLink - High Performance URL Shortener') }}" placeholder="e.g. My URL Shortener - Fast & Reliable" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">
+                                    <input type="text" name="meta_title" id="meta_title" value="{{ \App\Models\Setting::get('platform.meta_title', 'ScrollWebLink - High Performance URL Shortener') }}" placeholder="e.g. My URL Shortener - Fast & Reliable" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">
                                 </div>
                                 <div>
                                     <label for="meta_description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Default Meta Description</label>
-                                    <textarea name="meta_description" id="meta_description" rows="3" placeholder="e.g. Create short, memorable links instantly. Track clicks, manage URLs, and improve your marketing." class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">{{ Cache::get('platform.meta_description') }}</textarea>
+                                    <textarea name="meta_description" id="meta_description" rows="3" placeholder="e.g. Create short, memorable links instantly. Track clicks, manage URLs, and improve your marketing." class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">{{ \App\Models\Setting::get('platform.meta_description') }}</textarea>
                                 </div>
                                 <div class="mb-6">
                                     <label for="meta_keywords" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Default Meta Keywords</label>
-                                    <input type="text" name="meta_keywords" id="meta_keywords" value="{{ Cache::get('platform.meta_keywords', 'url shortener, link tracker') }}" placeholder="e.g. shortlink, url shortener, tracker, bio link" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">
+                                    <input type="text" name="meta_keywords" id="meta_keywords" value="{{ \App\Models\Setting::get('platform.meta_keywords', 'url shortener, link tracker') }}" placeholder="e.g. shortlink, url shortener, tracker, bio link" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">
                                 </div>
                             </div>
                         </div>
@@ -372,7 +372,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="mb-6">
                                 <label for="redirect_duration" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Redirect Duration (Seconds)</label>
-                                <input type="number" name="redirect_duration" id="redirect_duration" value="{{ Cache::get('platform.redirect_duration', 10) }}" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">
+                                <input type="number" name="redirect_duration" id="redirect_duration" value="{{ \App\Models\Setting::get('platform.redirect_duration', 10) }}" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4 text-sm">
                                 <p class="mt-1.5 text-xs text-gray-500">Wait time on countdown page.</p>
                             </div>
                         </div>
@@ -381,11 +381,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-gray-800">
                             <div class="mb-6">
                                 <label for="analytics_script" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Analytics / Custom Script HEAD</label>
-                                <textarea name="analytics_script" id="analytics_script" rows="4" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.analytics_script') }}</textarea>
+                                <textarea name="analytics_script" id="analytics_script" rows="4" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.analytics_script') }}</textarea>
                             </div>
                             <div class="mb-6">
                                 <label for="adsense_script" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">AdSense / Custom Script BODY</label>
-                                <textarea name="adsense_script" id="adsense_script" rows="4" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.adsense_script') }}</textarea>
+                                <textarea name="adsense_script" id="adsense_script" rows="4" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.adsense_script') }}</textarea>
                             </div>
                         </div>
 
@@ -453,7 +453,7 @@
                                     <p class="text-xs text-gray-500">Injected in &lt;head&gt;. Use for AdSense publisher script or any global ad script.</p>
                                 </div>
                             </div>
-                            <textarea name="adsense_script" id="adsense_script" rows="5" placeholder="e.g. &lt;script async src=&quot;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXX&quot;&gt;&lt;/script&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.adsense_script') }}</textarea>
+                            <textarea name="adsense_script" id="adsense_script" rows="5" placeholder="e.g. &lt;script async src=&quot;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXX&quot;&gt;&lt;/script&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.adsense_script') }}</textarea>
                         </div>
 
                         <!-- Top Banner -->
@@ -469,7 +469,7 @@
                                     <p class="text-xs text-gray-500">Displayed below the hero section header on the front page.</p>
                                 </div>
                             </div>
-                            <textarea name="ads_top_banner" id="ads_top_banner" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.ads_top_banner') }}</textarea>
+                            <textarea name="ads_top_banner" id="ads_top_banner" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.ads_top_banner') }}</textarea>
                         </div>
 
                         <!-- Middle Banner -->
@@ -485,7 +485,7 @@
                                     <p class="text-xs text-gray-500">Displayed between the "How It Works" and pricing sections.</p>
                                 </div>
                             </div>
-                            <textarea name="ads_mid_banner" id="ads_mid_banner" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.ads_mid_banner') }}</textarea>
+                            <textarea name="ads_mid_banner" id="ads_mid_banner" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.ads_mid_banner') }}</textarea>
                         </div>
 
                         <!-- Bottom Banner -->
@@ -501,7 +501,7 @@
                                     <p class="text-xs text-gray-500">Displayed above the footer on the front page.</p>
                                 </div>
                             </div>
-                            <textarea name="ads_bottom_banner" id="ads_bottom_banner" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.ads_bottom_banner') }}</textarea>
+                            <textarea name="ads_bottom_banner" id="ads_bottom_banner" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.ads_bottom_banner') }}</textarea>
                         </div>
 
                         <!-- Redirect Page Ads Divider -->
@@ -527,7 +527,7 @@
                                     <p class="text-xs text-gray-500">Displayed at the top of the countdown/redirect page.</p>
                                 </div>
                             </div>
-                            <textarea name="ads_redirect_top" id="ads_redirect_top" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.ads_redirect_top') }}</textarea>
+                            <textarea name="ads_redirect_top" id="ads_redirect_top" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.ads_redirect_top') }}</textarea>
                         </div>
 
                         <!-- Redirect Bottom Ad -->
@@ -543,7 +543,7 @@
                                     <p class="text-xs text-gray-500">Displayed at the bottom of the countdown/redirect page.</p>
                                 </div>
                             </div>
-                            <textarea name="ads_redirect_bottom" id="ads_redirect_bottom" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ Cache::get('platform.ads_redirect_bottom') }}</textarea>
+                            <textarea name="ads_redirect_bottom" id="ads_redirect_bottom" rows="5" placeholder="e.g. &lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;" class="block w-full font-mono text-xs border-gray-200 dark:border-gray-700 dark:bg-[#121217] dark:text-white focus:border-purple-500 focus:ring-purple-500 rounded-xl py-2.5 px-4">{{ \App\Models\Setting::get('platform.ads_redirect_bottom') }}</textarea>
                         </div>
 
                         <div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm text-blue-700 dark:text-blue-400">

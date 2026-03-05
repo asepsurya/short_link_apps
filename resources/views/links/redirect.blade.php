@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
-    $duration = (int) Cache::get('platform.redirect_duration', 10);
+    $duration = (int) \App\Models\Setting::get('platform.redirect_duration', 10);
     $fallbackDuration = $duration + 2;
     @endphp
-    <title>Redirecting... – {{ Cache::get('platform.app_name', 'ScrollWebLink') }}</title>
+    <title>Redirecting... – {{ \App\Models\Setting::get('platform.app_name', 'ScrollWebLink') }}</title>
     <!-- Meta-Refresh fallback: redirect after dynamic duration + 2s just in case JS fails -->
     <meta http-equiv="refresh" content="{{ $fallbackDuration }};url={{ $redirectUrl }}">
 
     <!-- Custom Integrations -->
-    {!! Cache::get('platform.analytics_script') !!}
-    {!! Cache::get('platform.adsense_script') !!}
+    {!! \App\Models\Setting::get('platform.analytics_script') !!}
+    {!! \App\Models\Setting::get('platform.adsense_script') !!}
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
@@ -172,9 +172,9 @@
 <body>
     <div class="container">
         <!-- Top Ad Space -->
-        @if(Cache::get('platform.ads_redirect_top'))
+        @if(\App\Models\Setting::get('platform.ads_redirect_top'))
         <div class="ad-space">
-            {!! Cache::get('platform.ads_redirect_top') !!}
+            {!! \App\Models\Setting::get('platform.ads_redirect_top') !!}
         </div>
         @endif
 
@@ -213,9 +213,9 @@
         <p class="skip-note">Redirecting automatically in <span id="seconds">{{ $duration }}</span> seconds...</p>
 
         <!-- Bottom Ad Space -->
-        @if(Cache::get('platform.ads_redirect_bottom'))
+        @if(\App\Models\Setting::get('platform.ads_redirect_bottom'))
         <div class="ad-space">
-            {!! Cache::get('platform.ads_redirect_bottom') !!}
+            {!! \App\Models\Setting::get('platform.ads_redirect_bottom') !!}
         </div>
         @endif
     </div>

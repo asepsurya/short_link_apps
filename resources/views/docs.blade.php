@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ __('docs.page_title') }} | {{ Cache::get('platform.meta_title', config('app.name', 'ScrollWebLink')) }}</title>
+    <title>{{ __('docs.page_title') }} | {{ \App\Models\Setting::get('platform.meta_title', config('app.name', 'ScrollWebLink')) }}</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

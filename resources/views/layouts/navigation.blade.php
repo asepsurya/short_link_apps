@@ -3,14 +3,14 @@
     <!-- Profile & Logo Area -->
     <div class="p-6 border-b border-gray-200 dark:border-gray-800">
         @php
-            $appName = Cache::get('platform.app_name', config('app.name', 'ScrollWebLink'));
-            $primaryColor = Cache::get('platform.primary_color', '#7c3aed');
+            $appName = \App\Models\Setting::get('platform.app_name', config('app.name', 'ScrollWebLink'));
+            $primaryColor = \App\Models\Setting::get('platform.primary_color', '#7c3aed');
             $hasLink = \Illuminate\Support\Str::contains($appName, 'Link');
             $beforeLink = $hasLink ? \Illuminate\Support\Str::beforeLast($appName, 'Link') : $appName;
         @endphp
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white mb-8">
-            @if(Cache::has('platform.logo_path'))
-                <img src="{{ asset('storage/' . Cache::get('platform.logo_path')) }}" class="w-8 h-8 object-contain">
+            @if(\App\Models\Setting::has('platform.logo_path'))
+                <img src="{{ asset('storage/' . \App\Models\Setting::get('platform.logo_path')) }}" class="w-8 h-8 object-contain">
             @else
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white" style="background: linear-gradient(135deg, {{ $primaryColor }}, #4f46e5)">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

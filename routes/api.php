@@ -13,7 +13,7 @@ Route::get('/user', function (Request $request) {
  */
 Route::middleware([
     'auth:sanctum', 
-    'throttle:' . Cache::get('platform.api_rate_limit', 60) . ',1',
+    'throttle:' . \App\Models\Setting::get('platform.api_rate_limit', 60) . ',1',
     \App\Http\Middleware\ApiRequestTracker::class
 ])->prefix('v1')->name('api.v1.')->group(function () {
     // Create a short link

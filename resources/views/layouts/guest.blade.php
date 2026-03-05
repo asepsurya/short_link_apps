@@ -7,8 +7,8 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    @if(Cache::has('platform.logo_path'))
-        <link rel="icon" href="{{ asset('storage/' . Cache::get('platform.logo_path')) }}">
+    @if(\App\Models\Setting::has('platform.logo_path'))
+        <link rel="icon" href="{{ asset('storage/' . \App\Models\Setting::get('platform.logo_path')) }}">
     @endif
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ Cache::get('platform.meta_title', config('app.name', 'ScrollWebLink')) }}</title>
-    <meta name="description" content="{{ Cache::get('platform.meta_description', __('meta.description')) }}">
-    <meta name="keywords" content="{{ Cache::get('platform.meta_keywords', __('meta.keywords')) }}">
+    <title>{{ \App\Models\Setting::get('platform.meta_title', config('app.name', 'ScrollWebLink')) }}</title>
+    <meta name="description" content="{{ \App\Models\Setting::get('platform.meta_description', __('meta.description')) }}">
+    <meta name="keywords" content="{{ \App\Models\Setting::get('platform.meta_keywords', __('meta.keywords')) }}">
 
-    @if(Cache::has('platform.logo_path'))
-    <link rel="icon" href="{{ asset('storage/' . Cache::get('platform.logo_path')) }}">
+    @if(\App\Models\Setting::has('platform.logo_path'))
+    <link rel="icon" href="{{ asset('storage/' . \App\Models\Setting::get('platform.logo_path')) }}">
     @endif
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,8 +22,8 @@
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 
     <!-- Custom Integrations -->
-    {!! Cache::get('platform.analytics_script') !!}
-    {!! Cache::get('platform.adsense_script') !!}
+    {!! \App\Models\Setting::get('platform.analytics_script') !!}
+    {!! \App\Models\Setting::get('platform.adsense_script') !!}
 
     <style>
         @keyframes float {
@@ -78,14 +78,14 @@
     <nav class="w-full px-6 py-5 lg:px-12 flex justify-between items-center relative z-20">
         <div class="flex items-center gap-10">
             @php
-            $appName = Cache::get('platform.app_name', config('app.name', 'ScrollWebLink'));
-            $primaryColor = Cache::get('platform.primary_color', '#7c3aed');
+            $appName = \App\Models\Setting::get('platform.app_name', config('app.name', 'ScrollWebLink'));
+            $primaryColor = \App\Models\Setting::get('platform.primary_color', '#7c3aed');
             $hasLink = \Illuminate\Support\Str::contains($appName, 'Link');
             $beforeLink = $hasLink ? \Illuminate\Support\Str::beforeLast($appName, 'Link') : $appName;
             @endphp
             <a href="/" class="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-                @if(Cache::has('platform.logo_path'))
-                <img src="{{ asset('storage/' . Cache::get('platform.logo_path')) }}" class="w-10 h-10 object-contain">
+                @if(\App\Models\Setting::has('platform.logo_path'))
+                <img src="{{ asset('storage/' . \App\Models\Setting::get('platform.logo_path')) }}" class="w-10 h-10 object-contain">
                 @else
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white" style="background: linear-gradient(135deg, {{ $primaryColor }}, #4f46e5)">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,10 +164,10 @@
                     </div>
                 </template>
             </div>
-            <form id="shorten-form" action="{{ Cache::get('platform.enable_guest_links', true) ? route('guest.link.store') : route('login') }}" method="{{ Cache::get('platform.enable_guest_links', true) ? 'POST' : 'GET' }}" class="max-w-2xl mx-auto mb-10" onsubmit="{{ Cache::get('platform.enable_guest_links', true) ? 'return validateCaptcha()' : '' }}" x-data="{ 
+            <form id="shorten-form" action="{{ \App\Models\Setting::get('platform.enable_guest_links', true) ? route('guest.link.store') : route('login') }}" method="{{ \App\Models\Setting::get('platform.enable_guest_links', true) ? 'POST' : 'GET' }}" class="max-w-2xl mx-auto mb-10" onsubmit="{{ \App\Models\Setting::get('platform.enable_guest_links', true) ? 'return validateCaptcha()' : '' }}" x-data="{ 
                     showCaptcha: {{ $errors->has('h-captcha-response') ? 'true' : 'false' }},
                     captchaError: '{{ $errors->first('h-captcha-response') }}',
-                    guestEnabled: {{ Cache::get('platform.enable_guest_links', true) ? 'true' : 'false' }}
+                    guestEnabled: {{ \App\Models\Setting::get('platform.enable_guest_links', true) ? 'true' : 'false' }}
                 }">
                 @csrf
 
@@ -201,7 +201,7 @@
 
                 <!-- Human Verification -->
                 <div class="mt-6 flex flex-col items-center gap-2" x-show="showCaptcha" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-                    <div class="h-captcha" data-sitekey="{{ Cache::get('platform.hcaptcha_sitekey', env('HCAPTCHA_SITEKEY')) }}" data-theme="dark" data-size="normal"></div>
+                    <div class="h-captcha" data-sitekey="{{ \App\Models\Setting::get('platform.hcaptcha_sitekey', env('HCAPTCHA_SITEKEY')) }}" data-theme="dark" data-size="normal"></div>
                     <p x-show="captchaError" x-text="captchaError" class="text-red-500 text-xs font-semibold" x-cloak></p>
                 </div>
 
@@ -217,7 +217,7 @@
             </form>
 
             <p class="text-lg md:text-xl text-gray-500 dark:text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-                {{ __('hero.description', ['appName' => Cache::get('platform.app_name', 'ScrollWebLink')]) }}
+                {{ __('hero.description', ['appName' => \App\Models\Setting::get('platform.app_name', 'ScrollWebLink')]) }}
             </p>
 
 
@@ -240,11 +240,11 @@
         </div>
 
         {{-- Top Ad Banner --}}
-        @if(Cache::has('platform.ads_top_banner') && Cache::get('platform.ads_top_banner'))
+        @if(\App\Models\Setting::has('platform.ads_top_banner') && \App\Models\Setting::get('platform.ads_top_banner'))
         <div class="w-full max-w-5xl mx-auto px-4 py-6">
             <div class="text-center">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-600 mb-2 block">Advertisement</span>
-                {!! Cache::get('platform.ads_top_banner') !!}
+                {!! \App\Models\Setting::get('platform.ads_top_banner') !!}
             </div>
         </div>
         @endif
@@ -287,11 +287,11 @@
         </section>
 
         {{-- Middle Ad Banner --}}
-        @if(Cache::has('platform.ads_mid_banner') && Cache::get('platform.ads_mid_banner'))
+        @if(\App\Models\Setting::has('platform.ads_mid_banner') && \App\Models\Setting::get('platform.ads_mid_banner'))
         <div class="w-full max-w-5xl mx-auto px-4 py-6">
             <div class="text-center">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-600 mb-2 block">Advertisement</span>
-                {!! Cache::get('platform.ads_mid_banner') !!}
+                {!! \App\Models\Setting::get('platform.ads_mid_banner') !!}
             </div>
         </div>
         @endif
@@ -431,11 +431,11 @@
         </section>
 
         {{-- Bottom Ad Banner --}}
-        @if(Cache::has('platform.ads_bottom_banner') && Cache::get('platform.ads_bottom_banner'))
+        @if(\App\Models\Setting::has('platform.ads_bottom_banner') && \App\Models\Setting::get('platform.ads_bottom_banner'))
         <div class="w-full max-w-5xl mx-auto px-4 py-6">
             <div class="text-center">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-600 mb-2 block">Advertisement</span>
-                {!! Cache::get('platform.ads_bottom_banner') !!}
+                {!! \App\Models\Setting::get('platform.ads_bottom_banner') !!}
             </div>
         </div>
         @endif
@@ -458,7 +458,7 @@
     </script>
 
     <footer class="w-full py-12 text-center text-sm text-gray-500 dark:text-gray-400 relative z-20">
-        {{ Cache::get('platform.footer_text', __('By. Asep Surya Somantri')) }}
+        {{ \App\Models\Setting::get('platform.footer_text', __('By. Asep Surya Somantri')) }}
     </footer>
 
 

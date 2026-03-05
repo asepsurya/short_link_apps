@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ Cache::get('platform.meta_title', config('app.name', 'ScrollWebLink')) }}</title>
-    <meta name="description" content="{{ Cache::get('platform.meta_description', 'Shorten URLs and track clicks with our powerful platform.') }}">
-    <meta name="keywords" content="{{ Cache::get('platform.meta_keywords', 'url shortener, link tracker, analytics') }}">
+    <title>{{ \App\Models\Setting::get('platform.meta_title', config('app.name', 'ScrollWebLink')) }}</title>
+    <meta name="description" content="{{ \App\Models\Setting::get('platform.meta_description', 'Shorten URLs and track clicks with our powerful platform.') }}">
+    <meta name="keywords" content="{{ \App\Models\Setting::get('platform.meta_keywords', 'url shortener, link tracker, analytics') }}">
 
-    @if(Cache::has('platform.logo_path'))
-    <link rel="icon" href="{{ asset('storage/' . Cache::get('platform.logo_path')) }}">
+    @if(\App\Models\Setting::has('platform.logo_path'))
+    <link rel="icon" href="{{ asset('storage/' . \App\Models\Setting::get('platform.logo_path')) }}">
     @endif
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

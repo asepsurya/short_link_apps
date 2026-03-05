@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-    //
+        //
     }
 
     /**
@@ -26,8 +26,8 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Dynamically inject Google OAuth settings from Admin Settings if available
-        $googleClientId = \Illuminate\Support\Facades\Cache::get('platform.google_client_id');
-        $googleClientSecret = \Illuminate\Support\Facades\Cache::get('platform.google_client_secret');
+        $googleClientId = \App\Models\Setting::get('platform.google_client_id');
+        $googleClientSecret = \App\Models\Setting::get('platform.google_client_secret');
 
         if (!empty($googleClientId) && !empty($googleClientSecret)) {
             config([

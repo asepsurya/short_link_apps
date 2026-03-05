@@ -16,7 +16,7 @@ class AdminController extends Controller
         $totalUsers = User::count();
         $totalLinks = Link::count();
         $totalClicks = LinkClick::count();
-        $totalApiRequests = (int) Cache::get('platform.total_api_requests', 0);
+        $totalApiRequests = (int) \App\Models\Setting::get('platform.total_api_requests', 0);
 
         $recentUsers = User::withCount('links')->latest()->take(5)->get();
         $guestLinks = Link::whereNull('user_id')->latest()->paginate(10, ['*'], 'guest_page');
@@ -75,7 +75,7 @@ class AdminController extends Controller
     public function updateRedirectSetting(Request $request)
     {
         // Store in cache as a platform preference (real apps would use a settings table)
-        Cache::forever('platform.use_redirect_page', $request->boolean('use_redirect_page', true));
+        \App\Models\Setting::set('platform.use_redirect_page', $request->boolean('use_redirect_page', true));
         return back()->with('success', 'Platform redirect setting updated.');
     }
 
@@ -84,8 +84,8 @@ class AdminController extends Controller
      */
     public function updateApiSettings(Request $request)
     {
-        Cache::forever('platform.api_enabled', $request->boolean('api_enabled', true));
-        Cache::forever('platform.api_rate_limit', $request->integer('api_rate_limit', 60));
+        \App\Models\Setting::set('platform.api_enabled', $request->boolean('api_enabled', true));
+        \App\Models\Setting::set('platform.api_rate_limit', $request->integer('api_rate_limit', 60));
 
         return back()->with('success', 'API settings successfully updated.');
     }
@@ -161,36 +161,36 @@ class AdminController extends Controller
 
         if ($request->hasFile('app_logo')) {
             // Delete old logo if exists
-            if (Cache::has('platform.logo_path')) {
-                Storage::disk('public')->delete(Cache::get('platform.logo_path'));
+            if (\App\Models\Setting::has('platform.logo_path')) {
+                Storage::disk('public')->delete(\App\Models\Setting::get('platform.logo_path'));
             }
             $path = $request->file('app_logo')->store('platform', 'public');
-            Cache::forever('platform.logo_path', $path);
+            \App\Models\Setting::set('platform.logo_path', $path);
         } elseif ($request->boolean('reset_logo')) {
             // Reset to default
-            if (Cache::has('platform.logo_path')) {
-                Storage::disk('public')->delete(Cache::get('platform.logo_path'));
+            if (\App\Models\Setting::has('platform.logo_path')) {
+                Storage::disk('public')->delete(\App\Models\Setting::get('platform.logo_path'));
             }
-            Cache::forget('platform.logo_path');
+            \App\Models\Setting::forget('platform.logo_path');
         }
 
-        Cache::forever('platform.app_name', $validated['app_name']);
-        Cache::forever('platform.footer_text', $validated['footer_text'] ?? '');
-        Cache::forever('platform.primary_color', $validated['primary_color'] ?? '#7c3aed');
-        Cache::forever('platform.meta_title', $validated['meta_title'] ?? '');
-        Cache::forever('platform.meta_description', $validated['meta_description'] ?? '');
-        Cache::forever('platform.meta_keywords', $validated['meta_keywords'] ?? '');
-        Cache::forever('platform.redirect_duration', $validated['redirect_duration'] ?? 10);
-        Cache::forever('platform.analytics_script', $validated['analytics_script'] ?? '');
-        Cache::forever('platform.adsense_script', $validated['adsense_script'] ?? '');
-        Cache::forever('platform.ads_top_banner', $validated['ads_top_banner'] ?? '');
-        Cache::forever('platform.ads_mid_banner', $validated['ads_mid_banner'] ?? '');
-        Cache::forever('platform.ads_bottom_banner', $validated['ads_bottom_banner'] ?? '');
-        Cache::forever('platform.ads_redirect_top', $validated['ads_redirect_top'] ?? '');
-        Cache::forever('platform.ads_redirect_bottom', $validated['ads_redirect_bottom'] ?? '');
+        \App\Models\Setting::set('platform.app_name', $validated['app_name']);
+        \App\Models\Setting::set('platform.footer_text', $validated['footer_text'] ?? '');
+        \App\Models\Setting::set('platform.primary_color', $validated['primary_color'] ?? '#7c3aed');
+        \App\Models\Setting::set('platform.meta_title', $validated['meta_title'] ?? '');
+        \App\Models\Setting::set('platform.meta_description', $validated['meta_description'] ?? '');
+        \App\Models\Setting::set('platform.meta_keywords', $validated['meta_keywords'] ?? '');
+        \App\Models\Setting::set('platform.redirect_duration', $validated['redirect_duration'] ?? 10);
+        \App\Models\Setting::set('platform.analytics_script', $validated['analytics_script'] ?? '');
+        \App\Models\Setting::set('platform.adsense_script', $validated['adsense_script'] ?? '');
+        \App\Models\Setting::set('platform.ads_top_banner', $validated['ads_top_banner'] ?? '');
+        \App\Models\Setting::set('platform.ads_mid_banner', $validated['ads_mid_banner'] ?? '');
+        \App\Models\Setting::set('platform.ads_bottom_banner', $validated['ads_bottom_banner'] ?? '');
+        \App\Models\Setting::set('platform.ads_redirect_top', $validated['ads_redirect_top'] ?? '');
+        \App\Models\Setting::set('platform.ads_redirect_bottom', $validated['ads_redirect_bottom'] ?? '');
 
         // Handle Guest Link Toggle
-        Cache::forever('platform.enable_guest_links', $request->has('enable_guest_links') ? $request->boolean('enable_guest_links') : false);
+        \App\Models\Setting::set('platform.enable_guest_links', $request->has('enable_guest_links') ? $request->boolean('enable_guest_links') : false);
 
         // Env Batch Updates
         $envUpdates = [

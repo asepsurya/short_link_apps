@@ -120,7 +120,7 @@ class LinkController extends Controller
      */
     public function guestStore(Request $request)
     {
-        if (!\Illuminate\Support\Facades\Cache::get('platform.enable_guest_links', true)) {
+        if (!\Illuminate\Support\Facades\\App\Models\Setting::get('platform.enable_guest_links', true)) {
             return back()->with('error', 'Public link creation is currently disabled.');
         }
 
@@ -133,7 +133,7 @@ class LinkController extends Controller
 
         // Verify hCaptcha
         $response = Http::withoutVerifying()->asForm()->post('https://hcaptcha.com/siteverify', [
-            'secret' => \Illuminate\Support\Facades\Cache::get('platform.hcaptcha_secret', env('HCAPTCHA_SECRET')),
+            'secret' => \Illuminate\Support\Facades\\App\Models\Setting::get('platform.hcaptcha_secret', env('HCAPTCHA_SECRET')),
             'response' => $request->input('h-captcha-response'),
             'remoteip' => $request->ip(),
         ]);
