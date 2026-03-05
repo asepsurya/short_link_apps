@@ -221,11 +221,7 @@
     </div>
 
     <script>
-        const TOTAL = {
-            {
-                $duration
-            }
-        };
+        const TOTAL = {{ $duration }};
         const circumference = 2 * Math.PI * 50; // 314.16
         const progress = document.getElementById('progress');
         const counter = document.getElementById('counter');

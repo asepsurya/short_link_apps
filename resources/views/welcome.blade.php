@@ -156,7 +156,7 @@
                         this.active = (this.active + 1) % this.phrases.length;
                     }, 4000);
                 }
-            }" class="h-[140px] xs:h-[160px] md:h-[220px] lg:h-[240px] flex items-center justify-center overflow-hidden mb-8 relative">
+            }" class="h-[100px] xs:h-[120px] md:h-[150px] lg:h-[160px] flex items-center justify-center overflow-hidden mb-8 relative">
                 <template x-for="(phrase, index) in phrases" :key="index">
                     <div x-show="active === index" x-transition:enter="transition ease-out duration-1000" x-transition:enter-start="opacity-0 translate-y-8" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-500 absolute" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-8" class="text-[28px] xs:text-[42px] md:text-[75px] lg:text-[85px] leading-[1.1] font-extrabold tracking-tight text-center">
                         <div x-html="phrase.main" class="whitespace-nowrap"></div>
@@ -297,7 +297,7 @@
         @endif
 
         <!-- Pricing Section -->
-        <section id="pricing" class="py-24  mx-auto px-4  w-full" >
+        <section id="pricing" class="py-10 mx-auto px-4  w-full" >
             <div class="max-w-5xl mx-auto px-4">
                 <div class="text-center mb-6">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">{{ __('Choose Your Plan') }}</h2>
