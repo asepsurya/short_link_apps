@@ -18,7 +18,7 @@ class AdminController extends Controller
         $totalClicks = LinkClick::count();
         $totalApiRequests = (int) Cache::get('platform.total_api_requests', 0);
 
-        $recentUsers = User::latest()->take(5)->get();
+        $recentUsers = User::withCount('links')->latest()->take(5)->get();
         $guestLinks = Link::whereNull('user_id')->latest()->paginate(10, ['*'], 'guest_page');
 
         return view('admin.dashboard', compact('totalUsers', 'totalLinks', 'totalClicks', 'totalApiRequests', 'recentUsers', 'guestLinks'));
@@ -90,6 +90,7 @@ class AdminController extends Controller
     public function updateAppSettings(Request $request)
     {
         $validated = $request->validate([
+            // General / SEO
             'app_name' => 'required|string|max:255',
             'footer_text' => 'nullable|string|max:255',
             'primary_color' => 'nullable|string|max:7', // Hex color
@@ -100,6 +101,43 @@ class AdminController extends Controller
             'analytics_script' => 'nullable|string',
             'adsense_script' => 'nullable|string',
             'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+
+            // App Env Settings
+            'app_env' => 'required|in:local,production',
+            'app_debug' => 'required|boolean',
+            'app_url' => 'required|url',
+
+            // Database Settings
+            'db_connection' => 'required|string',
+            'db_host' => 'required|string',
+            'db_port' => 'required|numeric',
+            'db_database' => 'required|string',
+            'db_username' => 'required|string',
+            'db_password' => 'nullable|string',
+
+            // Mail config
+            'mail_mailer' => 'required|string',
+            'mail_host' => 'required|string',
+            'mail_port' => 'required|numeric',
+            'mail_username' => 'nullable|string',
+            'mail_password' => 'nullable|string',
+            'mail_from_address' => 'required|email',
+            'mail_from_name' => 'required|string',
+
+            // Services
+            'google_client_id' => 'nullable|string',
+            'google_client_secret' => 'nullable|string',
+            'hcaptcha_sitekey' => 'nullable|string',
+            'hcaptcha_secret' => 'nullable|string',
+
+            // Advanced Array
+            'redis_host' => 'required|string',
+            'redis_password' => 'nullable|string',
+            'redis_port' => 'required|numeric',
+            'aws_access_key_id' => 'nullable|string',
+            'aws_secret_access_key' => 'nullable|string',
+            'aws_default_region' => 'nullable|string',
+            'aws_bucket' => 'nullable|string',
         ]);
 
         if ($request->hasFile('app_logo')) {
@@ -127,6 +165,78 @@ class AdminController extends Controller
         Cache::forever('platform.analytics_script', $validated['analytics_script'] ?? '');
         Cache::forever('platform.adsense_script', $validated['adsense_script'] ?? '');
 
+        // Handle Guest Link Toggle
+        Cache::forever('platform.enable_guest_links', $request->has('enable_guest_links') ? $request->boolean('enable_guest_links') : false);
+
+        // Env Batch Updates
+        $envUpdates = [
+            'APP_NAME' => '"' . $validated['app_name'] . '"',
+            'APP_ENV' => $validated['app_env'],
+            'APP_DEBUG' => $validated['app_debug'] ? 'true' : 'false',
+            'APP_URL' => '"' . rtrim($validated['app_url'], '/') . '"',
+
+            'DB_CONNECTION' => $validated['db_connection'],
+            'DB_HOST' => $validated['db_host'],
+            'DB_PORT' => $validated['db_port'],
+            'DB_DATABASE' => $validated['db_database'],
+            'DB_USERNAME' => $validated['db_username'],
+            'DB_PASSWORD' => $validated['db_password'] ? '"' . $validated['db_password'] . '"' : '',
+
+            'MAIL_MAILER' => $validated['mail_mailer'],
+            'MAIL_HOST' => $validated['mail_host'],
+            'MAIL_PORT' => $validated['mail_port'],
+            'MAIL_USERNAME' => $validated['mail_username'] ? '"' . $validated['mail_username'] . '"' : 'null',
+            'MAIL_PASSWORD' => $validated['mail_password'] ? '"' . $validated['mail_password'] . '"' : 'null',
+            'MAIL_FROM_ADDRESS' => '"' . $validated['mail_from_address'] . '"',
+            'MAIL_FROM_NAME' => '"' . $validated['mail_from_name'] . '"',
+
+            'REDIS_HOST' => $validated['redis_host'],
+            'REDIS_PASSWORD' => $validated['redis_password'] ? '"' . $validated['redis_password'] . '"' : 'null',
+            'REDIS_PORT' => $validated['redis_port'],
+
+            'AWS_ACCESS_KEY_ID' => $validated['aws_access_key_id'] ?? '',
+            'AWS_SECRET_ACCESS_KEY' => $validated['aws_secret_access_key'] ?? '',
+            'AWS_DEFAULT_REGION' => $validated['aws_default_region'] ?? 'us-east-1',
+            'AWS_BUCKET' => $validated['aws_bucket'] ?? '',
+
+            'GOOGLE_CLIENT_ID' => $validated['google_client_id'] ?? '',
+            'GOOGLE_CLIENT_SECRET' => $validated['google_client_secret'] ?? '',
+
+            'HCAPTCHA_SITEKEY' => $validated['hcaptcha_sitekey'] ?? '',
+            'HCAPTCHA_SECRET' => $validated['hcaptcha_secret'] ?? '',
+        ];
+
+        // Safely write to .env file
+        $this->setEnvValue($envUpdates);
+
         return back()->with('success', 'Application settings updated successfully.');
     }
+
+    /**
+     * Set multiple environment values within the .env file.
+     *
+     * @param  array  $values
+     * @return void
+     */
+    private function setEnvValue(array $values)
+    {
+        $path = base_path('.env');
+
+        if (file_exists($path)) {
+            $currentEnv = file_get_contents($path);
+
+            foreach ($values as $key => $value) {
+                // If key exists, replace it, otherwise append
+                if (preg_match("/^{$key}=.*/m", $currentEnv)) {
+                    $currentEnv = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $currentEnv);
+                } else {
+                    $currentEnv .= "\n{$key}={$value}\n";
+                }
+            }
+
+            file_put_contents($path, $currentEnv);
+        }
+    }
 }
+
+

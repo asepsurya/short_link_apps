@@ -9,6 +9,9 @@
     <meta name="description" content="{{ Cache::get('platform.meta_description', __('meta.description')) }}">
     <meta name="keywords" content="{{ Cache::get('platform.meta_keywords', __('meta.keywords')) }}">
 
+    @if(Cache::has('platform.logo_path'))
+        <link rel="icon" href="{{ asset('storage/' . Cache::get('platform.logo_path')) }}">
+    @endif
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -169,13 +172,14 @@
                 </template>
             </div>
             <form id="shorten-form" 
-                action="{{ route('guest.link.store') }}" 
-                method="POST" 
+                action="{{ Cache::get('platform.enable_guest_links', true) ? route('guest.link.store') : route('login') }}" 
+                method="{{ Cache::get('platform.enable_guest_links', true) ? 'POST' : 'GET' }}" 
                 class="max-w-2xl mx-auto mb-10" 
-                onsubmit="return validateCaptcha()"
+                onsubmit="{{ Cache::get('platform.enable_guest_links', true) ? 'return validateCaptcha()' : '' }}"
                 x-data="{ 
                     showCaptcha: {{ $errors->has('h-captcha-response') ? 'true' : 'false' }},
-                    captchaError: '{{ $errors->first('h-captcha-response') }}'
+                    captchaError: '{{ $errors->first('h-captcha-response') }}',
+                    guestEnabled: {{ Cache::get('platform.enable_guest_links', true) ? 'true' : 'false' }}
                 }">
                 @csrf
 
@@ -190,7 +194,7 @@
                             name="original_url" 
                             placeholder="{{ __('Paste your long link here') }}" 
                             required 
-                            @focus="showCaptcha = true"
+                            @focus="if(guestEnabled) showCaptcha = true"
                             class="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent" />
                     </div>
 
@@ -217,7 +221,7 @@
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 -translate-y-4"
                     x-transition:enter-end="opacity-100 translate-y-0">
-                    <div class="h-captcha" data-sitekey="634044d8-6c12-4a06-8694-3ae22406cf8c" data-theme="dark" data-size="normal"></div>
+                    <div class="h-captcha" data-sitekey="{{ Cache::get('platform.hcaptcha_sitekey', env('HCAPTCHA_SITEKEY')) }}" data-theme="dark" data-size="normal"></div>
                     <p x-show="captchaError" x-text="captchaError" class="text-red-500 text-xs font-semibold" x-cloak></p>
                 </div> 
                 
@@ -231,6 +235,8 @@
                     </div>
                 @endif
             </form>
+            </form>
+
             <p class="text-lg md:text-xl text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
                 {{ __('hero.description', ['appName' => Cache::get('platform.app_name', 'ScrollWebLink')]) }}
             </p>
