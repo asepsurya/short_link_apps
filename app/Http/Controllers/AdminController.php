@@ -21,7 +21,21 @@ class AdminController extends Controller
         $recentUsers = User::withCount('links')->latest()->take(5)->get();
         $guestLinks = Link::whereNull('user_id')->latest()->paginate(10, ['*'], 'guest_page');
 
-        return view('admin.dashboard', compact('totalUsers', 'totalLinks', 'totalClicks', 'totalApiRequests', 'recentUsers', 'guestLinks'));
+        $latestRelease = $this->getLatestRelease();
+        $currentVersion = config('app.version', '1.0.0');
+        $hasUpdate = $latestRelease && version_compare($latestRelease['tag'], $currentVersion, '>');
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalLinks',
+            'totalClicks',
+            'totalApiRequests',
+            'recentUsers',
+            'guestLinks',
+            'latestRelease',
+            'currentVersion',
+            'hasUpdate'
+        ));
     }
 
     public function users()
@@ -100,6 +114,11 @@ class AdminController extends Controller
             'redirect_duration' => 'nullable|integer|min:0|max:60',
             'analytics_script' => 'nullable|string',
             'adsense_script' => 'nullable|string',
+            'ads_top_banner' => 'nullable|string',
+            'ads_mid_banner' => 'nullable|string',
+            'ads_bottom_banner' => 'nullable|string',
+            'ads_redirect_top' => 'nullable|string',
+            'ads_redirect_bottom' => 'nullable|string',
             'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
 
             // App Env Settings
@@ -164,6 +183,11 @@ class AdminController extends Controller
         Cache::forever('platform.redirect_duration', $validated['redirect_duration'] ?? 10);
         Cache::forever('platform.analytics_script', $validated['analytics_script'] ?? '');
         Cache::forever('platform.adsense_script', $validated['adsense_script'] ?? '');
+        Cache::forever('platform.ads_top_banner', $validated['ads_top_banner'] ?? '');
+        Cache::forever('platform.ads_mid_banner', $validated['ads_mid_banner'] ?? '');
+        Cache::forever('platform.ads_bottom_banner', $validated['ads_bottom_banner'] ?? '');
+        Cache::forever('platform.ads_redirect_top', $validated['ads_redirect_top'] ?? '');
+        Cache::forever('platform.ads_redirect_bottom', $validated['ads_redirect_bottom'] ?? '');
 
         // Handle Guest Link Toggle
         Cache::forever('platform.enable_guest_links', $request->has('enable_guest_links') ? $request->boolean('enable_guest_links') : false);
@@ -210,6 +234,68 @@ class AdminController extends Controller
         $this->setEnvValue($envUpdates);
 
         return back()->with('success', 'Application settings updated successfully.');
+    }
+
+    /**
+     * Get latest release from GitHub API.
+     */
+    private function getLatestRelease()
+    {
+        return Cache::remember('platform.github_release', 3600, function () {
+            try {
+                $client = new \GuzzleHttp\Client();
+                $response = $client->get('https://api.github.com/repos/asepsurya/short_link_apps/releases/latest', [
+                    'headers' => [
+                        'User-Agent' => 'Laravel-App',
+                        'Accept' => 'application/vnd.github.v3+json',
+                    ],
+                    'timeout' => 5,
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $release = json_decode($response->getBody(), true);
+                    return [
+                        'tag' => $release['tag_name'],
+                        'name' => $release['name'],
+                        'body' => $release['body'],
+                        'url' => $release['html_url'],
+                        'published_at' => $release['published_at'],
+                    ];
+                }
+            } catch (\Exception $e) {
+                \Log::warning('GitHub Release Check failed: ' . $e->getMessage());
+            }
+            return null;
+        });
+    }
+
+    /**
+     * Pull latest updates from GitHub and clear cache.
+     */
+    public function pullUpdates()
+    {
+        try {
+            // Check if git is available and configured
+            $output = [];
+            $resultCode = 0;
+
+            // Execute git pull
+            exec('git pull origin main 2>&1', $output, $resultCode);
+            $gitOutput = implode("\n", $output);
+
+            if ($resultCode !== 0) {
+                return back()->withErrors(['error' => 'GitHub pull failed: ' . $gitOutput]);
+            }
+
+            // Execute optimize:clear
+            \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+            $artisanOutput = \Illuminate\Support\Facades\Artisan::output();
+
+            return back()->with('success', 'Successfully pulled updates from GitHub! Cache cleared.');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
+        }
     }
 
     /**

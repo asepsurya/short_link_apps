@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
-        $duration = (int) Cache::get('platform.redirect_duration', 10);
-        $fallbackDuration = $duration + 2;
+    $duration = (int) Cache::get('platform.redirect_duration', 10);
+    $fallbackDuration = $duration + 2;
     @endphp
     <title>Redirecting... – {{ Cache::get('platform.app_name', 'ScrollWebLink') }}</title>
     <!-- Meta-Refresh fallback: redirect after dynamic duration + 2s just in case JS fails -->
@@ -172,9 +172,11 @@
 <body>
     <div class="container">
         <!-- Top Ad Space -->
+        @if(Cache::get('platform.ads_redirect_top'))
         <div class="ad-space">
-            Advertisement
+            {!! Cache::get('platform.ads_redirect_top') !!}
         </div>
+        @endif
 
         <a href="/" class="logo">
             <div class="logo-icon">
@@ -211,13 +213,19 @@
         <p class="skip-note">Redirecting automatically in <span id="seconds">{{ $duration }}</span> seconds...</p>
 
         <!-- Bottom Ad Space -->
+        @if(Cache::get('platform.ads_redirect_bottom'))
         <div class="ad-space">
-            Advertisement
+            {!! Cache::get('platform.ads_redirect_bottom') !!}
         </div>
+        @endif
     </div>
 
     <script>
-        const TOTAL = {{ $duration }};
+        const TOTAL = {
+            {
+                $duration
+            }
+        };
         const circumference = 2 * Math.PI * 50; // 314.16
         const progress = document.getElementById('progress');
         const counter = document.getElementById('counter');

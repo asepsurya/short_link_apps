@@ -21,10 +21,7 @@ Route::get('/lang/{lang}', [\App\Http\Controllers\LanguageController::class, 'sw
 Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
 
-// Public Documentation
-Route::get('/docs', function () {
-    return view('docs');
-})->name('docs');
+
 
 // Guest link generation (no auth required)
 Route::post('/guest-link', [LinkController::class, 'guestStore'])->name('guest.link.store');
@@ -32,6 +29,12 @@ Route::post('/guest-link', [LinkController::class, 'guestStore'])->name('guest.l
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
+
+// Public Documentation
+Route::get('/docs', function () {
+    return view('docs');
+})->name('docs');
+
 Route::middleware('auth')->group(function () {
     Route::resource('links', LinkController::class)->except(['create', 'show']);
 
@@ -52,6 +55,7 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     Route::get('/settings', [AdminController::class, 'appSettings'])->name('settings');
     Route::patch('/settings/app', [AdminController::class, 'updateAppSettings'])->name('settings.update-app');
     Route::patch('/settings/api', [AdminController::class, 'updateApiSettings'])->name('settings.update-api');
+    Route::post('/updates/pull', [AdminController::class, 'pullUpdates'])->name('updates.pull');
 });
 
 // Short Link resolution (Must be at the bottom to avoid overriding other routes)

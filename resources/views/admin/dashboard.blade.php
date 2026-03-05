@@ -64,8 +64,8 @@
             <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalApiRequests) }}</h3>
             <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 mt-2">
                 @php
-                    $rateLimit = (int) Cache::get('platform.api_rate_limit', 60);
-                    $percentage = min(100, ($totalApiRequests / max(1, $rateLimit * 1440)) * 100); // 1440 mins in day
+                $rateLimit = (int) Cache::get('platform.api_rate_limit', 60);
+                $percentage = min(100, ($totalApiRequests / max(1, $rateLimit * 1440)) * 100); // 1440 mins in day
                 @endphp
                 <div class="bg-orange-500 h-1.5 rounded-full" style="width: {{ $percentage }}%"></div>
             </div>
@@ -199,19 +199,53 @@
                     </div>
 
                     <!-- Batch Update Button -->
-                    <form method="POST" action="{{ route('admin.links.batch-redirect') }}">
+                    <form method="POST" action="{{ route('admin.links.batch-redirect') }}" id="batch-enable-form">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="use_redirect_page" value="1">
-                        <button type="submit" onclick="return confirm('Apply 10-second redirect page to ALL existing links?')" class="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-colors">
+                        <button type="button" onclick="Swal.fire({
+                                title: 'Enable on all links?',
+                                text: 'Apply 10-second redirect page to ALL existing links?',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, enable all',
+                                cancelButtonText: 'Cancel',
+                                reverseButtons: true,
+                                customClass: {
+                                    confirmButton: 'px-5 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-bold shadow-lg shadow-purple-500/20',
+                                    cancelButton: 'px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-bold'
+                                },
+                                buttonsStyling: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.getElementById('batch-enable-form').submit();
+                                }
+                            })" class="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-colors">
                             Enable on All Existing Links
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('admin.links.batch-redirect') }}">
+                    <form method="POST" action="{{ route('admin.links.batch-redirect') }}" id="batch-disable-form">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="use_redirect_page" value="0">
-                        <button type="submit" onclick="return confirm('Disable redirect page for ALL existing links?')" class="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <button type="button" onclick="Swal.fire({
+                                title: 'Disable on all links?',
+                                text: 'Disable redirect page for ALL existing links?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, disable all',
+                                cancelButtonText: 'Cancel',
+                                reverseButtons: true,
+                                customClass: {
+                                    confirmButton: 'px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-bold shadow-lg shadow-orange-500/20',
+                                    cancelButton: 'px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-bold'
+                                },
+                                buttonsStyling: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.getElementById('batch-disable-form').submit();
+                                }
+                            })" class="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                             Disable on All Existing Links
                         </button>
                     </form>
@@ -243,7 +277,7 @@
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                             </label>
                         </div>
-                        
+
                         <div>
                             <label class="block text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Requests Per Minute (RPM)</label>
                             <input type="number" name="api_rate_limit" value="{{ Cache::get('platform.api_rate_limit', 60) }}" class="block w-full border-gray-200 dark:border-gray-700 dark:bg-[#1A1A22] dark:text-white focus:border-blue-500 focus:ring-blue-500 rounded-xl py-2 px-3 text-sm transition-colors" placeholder="e.g. 60">
