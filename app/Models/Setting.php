@@ -13,10 +13,15 @@ class Setting extends Model
      */
     public static function get($key, $default = null)
     {
-        return \Illuminate\Support\Facades\Cache::rememberForever($key, function () use ($key, $default) {
-            $setting = self::where('key', $key)->first();
-            return $setting ? $setting->value : $default;
-        });
+        try {
+            return \Illuminate\Support\Facades\Cache::rememberForever($key, function () use ($key, $default) {
+                $setting = self::where('key', $key)->first();
+                return $setting ? $setting->value : $default;
+            });
+        } catch (\Exception $e) {
+            // Either the settings table or the cache table doesn't exist yet
+            return $default;
+        }
     }
 
     /**
@@ -24,8 +29,12 @@ class Setting extends Model
      */
     public static function set($key, $value)
     {
-        self::updateOrCreate(['key' => $key], ['value' => $value]);
-        \Illuminate\Support\Facades\Cache::forever($key, $value);
+        try {
+            self::updateOrCreate(['key' => $key], ['value' => $value]);
+            \Illuminate\Support\Facades\Cache::forever($key, $value);
+        } catch (\Exception $e) {
+            // Ignore if tables aren't migrated yet
+        }
     }
 
     /**

@@ -5,10 +5,22 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedirectController;
+use App\Http\Controllers\InstallController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\TrackLinkClick;
 use App\Http\Controllers\Auth\SocialiteController;
 use Illuminate\Support\Facades\Route;
+
+// Installation Wizard Routes (Bypasses CheckInstallation via logic)
+Route::prefix('install')->name('install.')->group(function () {
+    Route::get('/', [InstallController::class, 'index'])->name('index');
+    Route::get('/database', [InstallController::class, 'database'])->name('database');
+    Route::post('/database', [InstallController::class, 'setupDatabase'])->name('database.setup');
+    Route::get('/migrations', [InstallController::class, 'migrations'])->name('migrations');
+    Route::get('/admin', [InstallController::class, 'admin'])->name('admin');
+    Route::post('/admin', [InstallController::class, 'setupAdmin'])->name('admin.setup');
+    Route::get('/finish', [InstallController::class, 'finish'])->name('finish');
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,8 +32,6 @@ Route::get('/lang/{lang}', [\App\Http\Controllers\LanguageController::class, 'sw
 // Google Authentication Routes
 Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
-
-
 
 // Guest link generation (no auth required)
 Route::post('/guest-link', [LinkController::class, 'guestStore'])->name('guest.link.store');

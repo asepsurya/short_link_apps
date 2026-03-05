@@ -47,7 +47,7 @@ class LinkController extends Controller
             'custom_slug' => $validated['custom_slug'] ?? null,
             'password' => !empty($validated['password']) ? bcrypt($validated['password']) : null,
             'redirect_type' => $validated['redirect_type'] ?? 302,
-            'expires_at' => $validated['expires_at'] ?Carbon::parse($validated['expires_at']) : null,
+            'expires_at' => $validated['expires_at'] ? Carbon::parse($validated['expires_at']) : null,
             'utm_source' => $validated['utm_source'] ?? null,
             'utm_medium' => $validated['utm_medium'] ?? null,
             'utm_campaign' => $validated['utm_campaign'] ?? null,
@@ -80,14 +80,13 @@ class LinkController extends Controller
         $data = [
             'original_url' => $validated['original_url'],
             'redirect_type' => $validated['redirect_type'] ?? 302,
-            'expires_at' => isset($validated['expires_at']) ?Carbon::parse($validated['expires_at']) : null,
+            'expires_at' => isset($validated['expires_at']) ? Carbon::parse($validated['expires_at']) : null,
             'use_redirect_page' => $request->boolean('use_redirect_page', false),
         ];
 
         if ($request->filled('password')) {
             $data['password'] = bcrypt($validated['password']);
-        }
-        elseif ($request->has('remove_password')) {
+        } elseif ($request->has('remove_password')) {
             $data['password'] = null;
         }
 
@@ -120,7 +119,7 @@ class LinkController extends Controller
      */
     public function guestStore(Request $request)
     {
-        if (!\Illuminate\Support\Facades\\App\Models\Setting::get('platform.enable_guest_links', true)) {
+        if (!\App\Models\Setting::get('platform.enable_guest_links', true)) {
             return back()->with('error', 'Public link creation is currently disabled.');
         }
 
@@ -133,7 +132,7 @@ class LinkController extends Controller
 
         // Verify hCaptcha
         $response = Http::withoutVerifying()->asForm()->post('https://hcaptcha.com/siteverify', [
-            'secret' => \Illuminate\Support\Facades\\App\Models\Setting::get('platform.hcaptcha_secret', env('HCAPTCHA_SECRET')),
+            'secret' => \App\Models\Setting::get('platform.hcaptcha_secret', env('HCAPTCHA_SECRET')),
             'response' => $request->input('h-captcha-response'),
             'remoteip' => $request->ip(),
         ]);
