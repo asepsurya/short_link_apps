@@ -250,7 +250,7 @@
         @endif
 
         <!-- How It Works Section -->
-        <section id="how-it-works" class="py-24 max-w-7xl mx-auto px-4 w-full" style="margin-top: 5rem;">
+        <section id="how-it-works" class="py-24 max-w-7xl mx-auto px-4 w-full" >
             <div class="text-center mb-5">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">{{ __('How It Works') }}</h2>
                 <p class="text-gray-500 dark:text-gray-400">{{ __('Simple steps to powerful link management') }}</p>
@@ -297,7 +297,7 @@
         @endif
 
         <!-- Pricing Section -->
-        <section id="pricing" class="py-24 bg-gray-50/50 mx-auto px-4  w-full" style="margin-top: 5rem;">
+        <section id="pricing" class="py-24  mx-auto px-4  w-full" >
             <div class="max-w-5xl mx-auto px-4">
                 <div class="text-center mb-6">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">{{ __('Choose Your Plan') }}</h2>
@@ -378,7 +378,7 @@
         </section>
 
         <!-- API Section -->
-        <section id="api" class="py-24 max-w-7xl mx-auto px-4 w-full mt-5" style="margin-top: 5rem;">
+        <section id="api" class="py-24 max-w-7xl mx-auto px-4 w-full mt-5" >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div>
                     <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-6">{{ __('Built for Developers') }}</h2>
